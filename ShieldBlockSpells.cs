@@ -11,7 +11,6 @@ namespace ShieldBlockSpells
         public void Awake()
         {
             var harmony = HarmonyInstance.Create("com.gnivler.ShieldBlockSpells");
-            //FileLog.Log("Startup");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
@@ -30,19 +29,17 @@ namespace ShieldBlockSpells
         })]
         public class ReceiveHitPatch
         {
-            public static void Prefix(Character __instance, ref DamageList _damage)
+            public static void Prefix(Character __instance, Character _dealerChar, ref DamageList _damage)
             {
+                if (!__instance.ShieldEquipped || !__instance.Blocking) return;
                 for (var i = 0; i < _damage.Count; i++)
                 {
-                    if (__instance.ShieldEquipped &&
-                        __instance.Blocking &&
-                        _damage[i].Type == DamageType.Types.Fire ||
+                    if (_damage[i].Type == DamageType.Types.Fire ||
                         _damage[i].Type == DamageType.Types.Frost ||
                         _damage[i].Type == DamageType.Types.Decay ||
                         _damage[i].Type == DamageType.Types.Electric ||
                         _damage[i].Type == DamageType.Types.Ethereal)
                     {
-                        //FileLog.Log($"{_damage[i]} is now 0");
                         _damage[i].Damage = 0f;
                     }
                 }
